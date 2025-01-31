@@ -5,7 +5,7 @@ from libcst.helpers import get_full_name_for_node
 
 import argparse
 from ast import literal_eval
-from typing import Union
+from typing import Union, cast
 
 import libcst as cst
 import libcst.matchers as m
@@ -68,8 +68,9 @@ class UnasyncifyMethod(cst.CSTTransformer):
             # an await expression
             return updated_node
 
+        func_name: cst.Name
         if isinstance(updated_node.func, cst.Name):
-            func_name: cst.Name = updated_node.func
+            func_name = updated_node.func
             unasync_name = self.unasynced_function_name(updated_node.func.value)
             if unasync_name is not None:
                 # let's transform it by removing the a
@@ -77,7 +78,7 @@ class UnasyncifyMethod(cst.CSTTransformer):
                 return updated_node.with_changes(func=unasync_func_name)
 
         elif isinstance(updated_node.func, cst.Attribute):
-            func_name: cst.Name = updated_node.func.attr
+            func_name = updated_node.func.attr
             unasync_name = self.unasynced_function_name(updated_node.func.attr.value)
             if unasync_name is not None:
                 # let's transform it by removing the a
@@ -142,15 +143,6 @@ class UnasyncifyMethodCommand(VisitorBasedCodemodCommand):
         self.class_stack.pop()
         return updated_node
 
-    def should_be_unasyncified(self, node: FunctionDef):
-        method_name = get_full_name_for_node(node.name)
-        # XXX do other checks here as well?
-        return (
-            node.asynchronous
-            and method_name.startswith("a")
-            and method_name == "ainit_connection_state"
-        )
-
     def label_as_codegen(self, node: FunctionDef, async_unsafe: bool) -> FunctionDef:
 
         from_codegen_marker = Decorator(decorator=Name("from_codegen"))
@@ -198,8 +190,10 @@ class UnasyncifyMethodCommand(VisitorBasedCodemodCommand):
                 if decorator.decorator.value == "from_codegen":
                     from_codegen = True
             elif m.matches(decorator.decorator, self.generate_unasync_pattern):
+                # Safety: m.matches call above
+                call: cst.Call = cast(cst.Call, decorator.decorator)
                 unasync = True
-                args = decorator.decorator.args
+                args = call.args
                 if len(args) == 0:
                     async_unsafe = False
                 elif len(args) == 1:
@@ -259,10 +253,10 @@ class UnasyncifyMethodCommand(VisitorBasedCodemodCommand):
             unasynced_func = self.label_as_codegen(
                 unasynced_func, async_unsafe=decorator_info.async_unsafe
             )
-            unasynced_func = unasynced_func.visit(UnasyncifyMethod())
+            transformed_unasynced_func = unasynced_func.visit(UnasyncifyMethod())
 
             # while here the async version is the canonical version, we place
             # the unasync version up on top
-            return cst.FlattenSentinel([unasynced_func, updated_node])
+            return cst.FlattenSentinel([transformed_unasynced_func, updated_node])
         else:
             return updated_node
