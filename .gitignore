@@ -7,3 +7,5 @@ tmp/
 *.egg
 build
 htmlcov
+
+docs/_build
