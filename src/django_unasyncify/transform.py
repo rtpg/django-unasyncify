@@ -133,15 +133,6 @@ class UnasyncifyMethodCommand(VisitorBasedCodemodCommand):
 
     def __init__(self, context: CodemodContext) -> None:
         super().__init__(context)
-        self.class_stack: list[ClassDef] = []
-
-    def visit_ClassDef(self, original_node):
-        self.class_stack.append(original_node)
-        return True
-
-    def leave_ClassDef(self, original_node, updated_node):
-        self.class_stack.pop()
-        return updated_node
 
     def label_as_codegen(self, node: FunctionDef, async_unsafe: bool) -> FunctionDef:
 
