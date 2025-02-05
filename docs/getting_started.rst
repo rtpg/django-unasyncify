@@ -17,7 +17,7 @@ Getting Started
 
      # path to a python file that django-unasyncify will create
      # that holds decorators used for codegen
-     codegen_path = "src/pkg/_codegen.py"
+     codegen_decorators_path = "src/pkg/_codegen.py"
      # The import path for the decorator
      codegen_import_path = "pkg._codegen"
 

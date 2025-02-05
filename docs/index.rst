@@ -68,5 +68,6 @@ The synchronous variant has also been annotated with ``@from_codegen``. This dec
    :caption: Contents:
 
    getting_started
+   configuration
    transformation_rules
    why_not_sync_to_async
