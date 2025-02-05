@@ -1,6 +1,6 @@
 from collections import namedtuple
 import libcst as cst
-from libcst import FunctionDef, Name, Decorator
+from libcst import EmptyLine, FunctionDef, Name, Decorator
 from libcst.helpers import get_full_name_for_node
 
 from typing import cast
@@ -243,6 +243,8 @@ class UnasyncifyMethodCommand(VisitorBasedCodemodCommand):
 
             # while here the async version is the canonical version, we place
             # the unasync version up on top
-            return cst.FlattenSentinel([transformed_unasynced_func, updated_node])
+            return cst.FlattenSentinel(
+                [transformed_unasynced_func, EmptyLine(), updated_node]
+            )
         else:
             return updated_node
