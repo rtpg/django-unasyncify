@@ -1,5 +1,4 @@
 from argparse import ArgumentParser
-import subprocess
 
 from django_unasyncify.transform import UnasyncifyMethodCommand
 from .config import load_config

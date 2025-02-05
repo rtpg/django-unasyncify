@@ -1,13 +1,10 @@
 from collections import namedtuple
 import libcst as cst
-from libcst import FunctionDef, ClassDef, Name, Decorator
+from libcst import FunctionDef, Name, Decorator
 from libcst.helpers import get_full_name_for_node
 
-import argparse
-from ast import literal_eval
-from typing import Union, cast
+from typing import cast
 
-import libcst as cst
 import libcst.matchers as m
 from libcst.codemod import CodemodContext, VisitorBasedCodemodCommand
 from libcst.codemod.visitors import AddImportsVisitor
@@ -90,7 +87,6 @@ class UnasyncifyMethod(cst.CSTTransformer):
         return updated_node
 
     def leave_If(self, original_node, updated_node):
-
         # checking if the original if was "if ASYNC_TRUTH_MARKER"
         # (the updated node would have turned this to if False)
         if (
@@ -135,7 +131,6 @@ class UnasyncifyMethodCommand(VisitorBasedCodemodCommand):
         super().__init__(context)
 
     def label_as_codegen(self, node: FunctionDef, async_unsafe: bool) -> FunctionDef:
-
         from_codegen_marker = Decorator(decorator=Name("from_codegen"))
         AddImportsVisitor.add_needed_import(
             self.context, "django.utils.codegen", "from_codegen"
