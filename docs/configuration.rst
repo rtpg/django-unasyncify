@@ -49,3 +49,31 @@ In the above configuration, we'll end up with something like::
     frok pkg1._codegen import from_unasynced, generate_unasynced
 
 During work.
+
+
+attribute_renames
+-----------------
+
+In some cases you might want to rename certain identifiers based on whether it's the sync or async variant.
+
+For these cases you can use ``identifier_renames`` to definie a key/value mapping of these::
+
+    [tool.django-unasyncify]
+    identifier_renames = {
+        aconnection = "connection",
+        async_obj   = "sync_obj"
+    }
+
+This renaming mapping will kick in during codegen for functions makred with ``@generate_unasynced``.
+
+It will replace usages of the identifer in attribute accesses. This is very helpful when dealing with attributes on ``self`` for an object that might manage both sync and async variations::
+
+  mark_as_used(self.async_obj)
+  return self.aconnection.properties
+
+  # Becomes
+  mark_as_used(self.sync_obj)
+  return self.connection.properties
+
+
+This renaming is different from the method renaming that happens in
