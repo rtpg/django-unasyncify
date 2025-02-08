@@ -71,7 +71,7 @@ def test_sample_project_config_loading():
         project_base=(original_sample_project),
         paths_to_visit=[str(original_sample_project)],
         unasync_helpers_path="unasync_utils.py",
-        codegen_import_path="unasync_utils",
+        unasync_helpers_import_path="unasync_utils",
     )
 
     assert (

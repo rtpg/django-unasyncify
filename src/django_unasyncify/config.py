@@ -11,7 +11,7 @@ class Config:
     paths_to_visit: list[str] = field(default_factory=lambda: [])
     attribute_renames: dict[str, str] = field(default_factory=lambda: {})
     # XXX maybe rename this one
-    codegen_import_path: str = "MISSING_IMPORT_PATH"
+    unasync_helpers_import_path: str = "MISSING_IMPORT_PATH"
     # XXX rename this one as well, and not include the defaults here
     unasync_helpers_path: str = "MISSING"
 
@@ -59,5 +59,5 @@ def load_config_from_project_path(project_path: str) -> Config:
         paths_to_visit=paths_to_visit,
         attribute_renames=unasyncify_config.get("attribute_renames", {}),
         unasync_helpers_path=unasyncify_config["unasync_helpers_path"],
-        codegen_import_path=unasyncify_config["codegen_import_path"],
+        unasync_helpers_import_path=unasyncify_config["unasync_helpers_import_path"],
     )

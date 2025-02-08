@@ -104,7 +104,7 @@ class TestRuns(CodemodTest):
 
         cls.config = Config(
             # hacky relative import
-            codegen_import_path="_codegen"
+            unasync_helpers_import_path="_codegen"
         )
 
     def test_is_async(self):

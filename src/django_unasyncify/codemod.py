@@ -27,7 +27,7 @@ class UnasyncifyMethodCommand(VisitorBasedCodemodCommand):
     def add_codegen_imports(self, *names):
         for name in names:
             AddImportsVisitor.add_needed_import(
-                self.context, self.config.codegen_import_path, name
+                self.context, self.config.unasync_helpers_import_path, name
             )
 
     def label_as_codegen(self, node: FunctionDef, async_unsafe: bool) -> FunctionDef:
