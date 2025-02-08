@@ -5,12 +5,11 @@ from textwrap import dedent
 from libcst.codemod import CodemodTest
 from django_unasyncify.scaffolding import ensure_codegen_template
 
-from django_unasyncify.transform import UnasyncifyMethodCommand
+from django_unasyncify.codemod import UnasyncifyMethodCommand
 from django_unasyncify.config import Config
 
 
 class TestFoo(CodemodTest):
-
     TRANSFORM = UnasyncifyMethodCommand
 
     def test_unasynced_generation(self):
@@ -63,7 +62,6 @@ class TestFoo(CodemodTest):
 
 
 class TestRuns(CodemodTest):
-
     TRANSFORM = UnasyncifyMethodCommand
 
     @classmethod

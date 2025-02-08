@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
 
-from django_unasyncify.transform import UnasyncifyMethodCommand
+from django_unasyncify.codemod import UnasyncifyMethodCommand
 from .config import load_config
 
 from libcst.codemod import (
