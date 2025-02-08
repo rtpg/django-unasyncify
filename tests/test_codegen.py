@@ -16,7 +16,7 @@ class TestFoo(CodemodTest):
         """
 
         after = """
-        from django.utils.codegen import from_codegen
+        from django.utils.codegen import from_codegen, generate_unasynced
 
         @from_codegen
         def operation(self):
@@ -40,7 +40,7 @@ class TestFoo(CodemodTest):
         """
 
         after = """
-        from django.utils.codegen import from_codegen
+        from django.utils.codegen import from_codegen, generate_unasynced
 
         @from_codegen
         def operation(self):

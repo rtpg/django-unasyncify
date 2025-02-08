@@ -135,6 +135,9 @@ class UnasyncifyMethodCommand(VisitorBasedCodemodCommand):
         AddImportsVisitor.add_needed_import(
             self.context, "django.utils.codegen", "from_codegen"
         )
+        AddImportsVisitor.add_needed_import(
+            self.context, "django.utils.codegen", "generate_unasynced"
+        )
 
         decorators_to_add = [from_codegen_marker]
         if async_unsafe:
