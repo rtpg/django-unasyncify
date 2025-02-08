@@ -21,10 +21,12 @@ class UnasyncifyMethod(cst.CSTTransformer):
     """
 
     config: Config
+    is_async_seen: bool
 
     def __init__(self, config):
         self.config = config
         self.await_depth = 0
+        self.is_async_seen = False
 
     def visit_Await(self, node):
         self.await_depth += 1
@@ -35,6 +37,9 @@ class UnasyncifyMethod(cst.CSTTransformer):
         return updated_node.expression
 
     def leave_Name(self, original_node, updated_node):
+        # IS_ASYNC is a bit of a special case
+        if updated_node.value == "IS_ASYNC":
+            self.is_async_seen = True
         # some names will get rewritten because we know
         # about them
         if updated_node.value in self.config.attribute_renames:
@@ -86,11 +91,11 @@ class UnasyncifyMethod(cst.CSTTransformer):
         return updated_node
 
     def leave_If(self, original_node, updated_node):
-        # checking if the original if was "if ASYNC_TRUTH_MARKER"
+        # checking if the original if was "if IS_ASYNC"
         # (the updated node would have turned this to if False)
         if (
             isinstance(original_node.test, cst.Name)
-            and original_node.test.value == "ASYNC_TRUTH_MARKER"
+            and original_node.test.value == "IS_ASYNC"
         ):
             if updated_node.orelse is not None:
                 if isinstance(updated_node.orelse, cst.Else):
@@ -132,14 +137,15 @@ class UnasyncifyMethodCommand(VisitorBasedCodemodCommand):
         self.config = config
         super().__init__(context)
 
+    def add_codegen_imports(self, *names):
+        for name in names:
+            AddImportsVisitor.add_needed_import(
+                self.context, self.config.codegen_import_path, name
+            )
+
     def label_as_codegen(self, node: FunctionDef, async_unsafe: bool) -> FunctionDef:
         from_codegen_marker = Decorator(decorator=Name("from_codegen"))
-        AddImportsVisitor.add_needed_import(
-            self.context, "django.utils.codegen", "from_codegen"
-        )
-        AddImportsVisitor.add_needed_import(
-            self.context, "django.utils.codegen", "generate_unasynced"
-        )
+        self.add_codegen_imports("from_codegen", "generate_unasynced")
 
         decorators_to_add = [from_codegen_marker]
         if async_unsafe:
@@ -252,9 +258,12 @@ class UnasyncifyMethodCommand(VisitorBasedCodemodCommand):
             unasynced_func = self.label_as_codegen(
                 unasynced_func, async_unsafe=decorator_info.async_unsafe
             )
-            transformed_unasynced_func = unasynced_func.visit(
-                UnasyncifyMethod(self.config)
-            )
+            transformer = UnasyncifyMethod(self.config)
+
+            transformed_unasynced_func = unasynced_func.visit(transformer)
+
+            if transformer.is_async_seen:
+                self.add_codegen_imports("IS_ASYNC")
 
             # while here the async version is the canonical version, we place
             # the unasync version up on top

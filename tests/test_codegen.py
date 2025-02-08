@@ -1,3 +1,7 @@
+import asyncio
+from pathlib import Path
+from textwrap import dedent
+
 from libcst.codemod import CodemodTest
 
 from django_unasyncify.transform import UnasyncifyMethodCommand
