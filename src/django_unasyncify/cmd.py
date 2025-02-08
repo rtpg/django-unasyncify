@@ -1,6 +1,7 @@
 from argparse import ArgumentParser
 
 from django_unasyncify.codemod import UnasyncifyMethodCommand
+from django_unasyncify.scaffolding import ensure_codegen_template
 from .config import Config
 
 from libcst.codemod import (
@@ -27,6 +28,8 @@ def main(config: Config | None = None):
         args = parser.parse_args()
         config = Config.from_project_path(args.project)
 
+    # place the codegen template
+    ensure_codegen_template(config.codegen_template_path())
     codemod = UnasyncifyMethodCommand(config=config, context=CodemodContext())
 
     print("About to run transform...")
