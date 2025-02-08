@@ -18,14 +18,15 @@ Getting Started
      # path to a python file that django-unasyncify
      # will manage with unasync helpers
      unasync_helpers_path = "src/pkg/_codegen.py"
-     # The import path for the decorator
+     # The import path for the unasync helpers
+     # (used in import statements)
      unasync_helpers_import_path = "pkg._codegen"
 
 3. Decorate a method that you want to generate a synchronous variant of. Make sure to follow the Django naming convention of starting your async method with an ``a``!::
 
 
-     # (django-unasyncify will create this pkg
-     #  on first run, from the unasync_helpers_path
+     # (django-unasyncify will create this
+     #  on first run, using  the unasync_helpers_path
      #  settings)
      from pkg._codegen import generate_unasynced
 
@@ -44,8 +45,11 @@ Getting Started
 
      django-unasyncify
 
+If you're running it outside of the project root, you can run it by pointing directly to the project directory (where you have your ``pyproject.toml``)::
 
-5. After this, you should find your code modified with a sync variant::
+     django-unasyncify --project /path/to/project
+
+5. After this, your file will have been modified with a sync variant::
 
     from pkg._codegen import generate_unasynced
 
