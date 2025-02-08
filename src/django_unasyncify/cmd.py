@@ -21,7 +21,7 @@ def main():
     args = parser.parse_args()
     config = load_config(args.project)
 
-    codemod = UnasyncifyMethodCommand(context=CodemodContext())
+    codemod = UnasyncifyMethodCommand(config=config, context=CodemodContext())
 
     print("About to run transform...")
     files_to_visit = gather_files(config.paths_to_visit)

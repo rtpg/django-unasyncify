@@ -1,6 +1,7 @@
 from libcst.codemod import CodemodTest
 
 from django_unasyncify.transform import UnasyncifyMethodCommand
+from django_unasyncify.config import Config
 
 
 class TestFoo(CodemodTest):
@@ -29,7 +30,7 @@ class TestFoo(CodemodTest):
           await self.afoo()
         """
 
-        self.assertCodemod(before, after)
+        self.assertCodemod(before, after, config=Config())
 
     def test_unasynced_generation_no_parens(self):
         before = """
@@ -53,4 +54,4 @@ class TestFoo(CodemodTest):
           await self.afoo()
         """
 
-        self.assertCodemod(before, after)
+        self.assertCodemod(before, after, config=Config())

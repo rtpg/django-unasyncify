@@ -9,6 +9,8 @@ import libcst.matchers as m
 from libcst.codemod import CodemodContext, VisitorBasedCodemodCommand
 from libcst.codemod.visitors import AddImportsVisitor
 
+from django_unasyncify.config import Config
+
 
 DecoratorInfo = namedtuple("DecoratorInfo", ["from_codegen", "unasync", "async_unsafe"])
 
@@ -18,7 +20,10 @@ class UnasyncifyMethod(cst.CSTTransformer):
     Make a non-sync version of the method
     """
 
-    def __init__(self):
+    config: Config
+
+    def __init__(self, config):
+        self.config = config
         self.await_depth = 0
 
     def visit_Await(self, node):
@@ -29,18 +34,12 @@ class UnasyncifyMethod(cst.CSTTransformer):
         # we just remove the actual await
         return updated_node.expression
 
-    NAMES_TO_REWRITE = {
-        "aconnection": "connection",
-        "ASYNC_TRUTH_MARKER": "False",
-        "acursor": "cursor",
-    }
-
     def leave_Name(self, original_node, updated_node):
         # some names will get rewritten because we know
         # about them
-        if updated_node.value in self.NAMES_TO_REWRITE:
+        if updated_node.value in self.config.attribute_renames:
             return updated_node.with_changes(
-                value=self.NAMES_TO_REWRITE[updated_node.value]
+                value=self.config.attribute_renames[updated_node.value]
             )
         return updated_node
 
@@ -127,7 +126,10 @@ class UnasyncifyMethod(cst.CSTTransformer):
 class UnasyncifyMethodCommand(VisitorBasedCodemodCommand):
     DESCRIPTION = "Transform async methods to sync ones"
 
-    def __init__(self, context: CodemodContext) -> None:
+    config: Config
+
+    def __init__(self, context: CodemodContext, config: Config) -> None:
+        self.config = config
         super().__init__(context)
 
     def label_as_codegen(self, node: FunctionDef, async_unsafe: bool) -> FunctionDef:
@@ -250,7 +252,9 @@ class UnasyncifyMethodCommand(VisitorBasedCodemodCommand):
             unasynced_func = self.label_as_codegen(
                 unasynced_func, async_unsafe=decorator_info.async_unsafe
             )
-            transformed_unasynced_func = unasynced_func.visit(UnasyncifyMethod())
+            transformed_unasynced_func = unasynced_func.visit(
+                UnasyncifyMethod(self.config)
+            )
 
             # while here the async version is the canonical version, we place
             # the unasync version up on top
