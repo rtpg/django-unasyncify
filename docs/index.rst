@@ -17,9 +17,10 @@ For example, consider the following snippet::
     @generate_unasynced
     async def acreate_model_instance(self, data):
         """
-        Return a new instance of the session model object, which represents the
-        current session state. Intended to be used for saving the session data
-        to the database.
+        Return a new instance of the session model object, which
+        represents the current session state.
+        Intended to be used for saving the
+        session data to the database.
         """
         return self.model(
             session_key=await self._aget_or_create_session_key(),
@@ -32,9 +33,10 @@ After running ``django-unasyncify``, the file containing this method is modified
     @from_codegen
     def create_model_instance(self, data):
         """
-        Return a new instance of the session model object, which represents the
-        current session state. Intended to be used for saving the session data
-        to the database.
+        Return a new instance of the session model object, which
+        represents the current session state.
+        Intended to be used for saving the
+        session data to the database.
         """
         return self.model(
             session_key=self._get_or_create_session_key(),
@@ -45,9 +47,10 @@ After running ``django-unasyncify``, the file containing this method is modified
     @generate_unasynced
     async def acreate_model_instance(self, data):
         """
-        Return a new instance of the session model object, which represents the
-        current session state. Intended to be used for saving the session data
-        to the database.
+        Return a new instance of the session model object, which
+        represents the current session state.
+        Intended to be used for saving the
+        session data to the database.
         """
         return self.model(
             session_key=await self._aget_or_create_session_key(),
@@ -70,5 +73,6 @@ The synchronous variant has also been annotated with ``@from_codegen``. This dec
    getting_started
    configuration
    usage_tips
+   unasync_helpers
    transformation_rules
    why_not_sync_to_async

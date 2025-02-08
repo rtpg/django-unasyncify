@@ -9,7 +9,7 @@ from django_unasyncify.codemod import UnasyncifyMethodCommand
 from django_unasyncify.config import Config
 
 
-class TestFoo(CodemodTest):
+class TestTranforms(CodemodTest):
     TRANSFORM = UnasyncifyMethodCommand
 
     def test_unasynced_generation(self):
@@ -56,6 +56,39 @@ class TestFoo(CodemodTest):
         async def aoperation(self):
           # a comment to be preserved
           await self.afoo()
+        """
+
+        self.assertCodemod(before, after, config=Config())
+
+    def test_usage_tip_example(self):
+        before = """
+        @generate_unasynced
+        async def arun_calculation(data):
+            result = {"used_async": IS_ASYNC}
+            if IS_ASYNC:
+                result["data"] = await third_party_lib.async_calc(data)
+            else:
+                result["data"] = another_third_party_lib.sync_calc(data)
+            return result
+        """
+
+        after = """
+        from MISSING_IMPORT_PATH import IS_ASYNC, from_codegen, generate_unasynced
+
+        @from_codegen
+        def run_calculation(data):
+            result = {"used_async": False}
+            result["data"] = another_third_party_lib.sync_calc(data)
+            return result
+
+        @generate_unasynced
+        async def arun_calculation(data):
+            result = {"used_async": IS_ASYNC}
+            if IS_ASYNC:
+                result["data"] = await third_party_lib.async_calc(data)
+            else:
+                result["data"] = another_third_party_lib.sync_calc(data)
+            return result
         """
 
         self.assertCodemod(before, after, config=Config())

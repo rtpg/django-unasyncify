@@ -47,32 +47,33 @@ Here is a sampling of transformations, described as intuitively as possible.
     - Replace the attribute name in the call (``self.ado_thing() -> self.do_thing()``)
 
 - When an if statement is seen:
-  - if the `if` condition is exactly the name ``ASYNC_TRUTH_MARKER``:
-    remove the condition entirely.
-  -
+  - if the `if` condition is exactly the name ``ASYNC_TRUTH_MARKER``: remove the condition entirely.
 
 
 Here is a list of transformation examples that capture what this does. For exact details, looking at ``UnasyncifyMethod`` might be quicker.
 
 Async ``with`` statements are transformed::
-  async with expr:
-    body
 
-  # Becomes
+    async with expr:
+      body
 
-  with expr:
-    body
+    # Becomes
+
+    with expr:
+      body
 
 Async ``for`` statements are transformed::
-  async for for_loop_expr:
-    body
 
-  # Becomes
+    async for for_loop_expr:
+      body
 
-  for for_loop_expr:
-    body
+    # Becomes
+
+    for for_loop_expr:
+      body
 
 Async ``for`` comprehensions are transformed::
+
   expr async for elt in container
 
   # Becomes
