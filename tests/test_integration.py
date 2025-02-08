@@ -70,7 +70,7 @@ def test_sample_project_config_loading():
     assert config == Config(
         project_base=(original_sample_project),
         paths_to_visit=[str(original_sample_project)],
-        codegen_generators_path="unasync_utils.py",
+        unasync_helpers_path="unasync_utils.py",
         codegen_import_path="unasync_utils",
     )
 

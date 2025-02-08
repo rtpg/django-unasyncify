@@ -13,7 +13,7 @@ class Config:
     # XXX maybe rename this one
     codegen_import_path: str = "MISSING_IMPORT_PATH"
     # XXX rename this one as well, and not include the defaults here
-    codegen_generators_path: str = "MISSING"
+    unasync_helpers_path: str = "MISSING"
 
     def __post_init__(self):
         # this IS_ASYNC rename is present even when we explicitly don't include
@@ -25,7 +25,7 @@ class Config:
         return load_config_from_project_path(path)
 
     def codegen_template_path(self) -> Path:
-        return self.project_base / self.codegen_generators_path
+        return self.project_base / self.unasync_helpers_path
 
 
 def load_config_from_project_path(project_path: str) -> Config:
@@ -58,6 +58,6 @@ def load_config_from_project_path(project_path: str) -> Config:
         project_base=project_base,
         paths_to_visit=paths_to_visit,
         attribute_renames=unasyncify_config.get("attribute_renames", {}),
-        codegen_generators_path=unasyncify_config["codegen_generators_path"],
+        unasync_helpers_path=unasyncify_config["unasync_helpers_path"],
         codegen_import_path=unasyncify_config["codegen_import_path"],
     )

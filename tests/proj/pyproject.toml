@@ -1,3 +1,3 @@
 [tool.django_unasyncify]
-codegen_generators_path = "unasync_utils.py"
+unasync_helpers_path = "unasync_utils.py"
 codegen_import_path = "unasync_utils"
