@@ -19,7 +19,11 @@ class Config:
         self.attribute_renames.setdefault("IS_ASYNC", "False")
 
 
-def load_config(project_path: str):
+    @classmethod
+    def from_project_path(cls, path) -> "Config":
+        return load_config_from_project_path(path)
+
+def load_config_from_project_path(project_path: str) -> Config:
     project_base = Path(project_path)
     pyproject_location = project_base / "pyproject.toml"
     with pyproject_location.open("rb") as pyproject_file:

@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 
 from django_unasyncify.codemod import UnasyncifyMethodCommand
-from .config import load_config
+from .config import Config
 
 from libcst.codemod import (
     CodemodContext,
@@ -17,9 +17,15 @@ parser = ArgumentParser(
 parser.add_argument("-p", "--project", required=True)
 
 
-def main():
-    args = parser.parse_args()
-    config = load_config(args.project)
+def main(config: Config | None = None):
+    """
+    Run django-unasyncify
+
+    If config is not provided, parse from the command line
+    """
+    if not config:
+        args = parser.parse_args()
+        config = Config.from_project_path(args.project)
 
     codemod = UnasyncifyMethodCommand(config=config, context=CodemodContext())
 
