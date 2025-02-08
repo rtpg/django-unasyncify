@@ -58,12 +58,19 @@ After running ``django-unasyncify``, the file containing this method is modified
             expire_date=await self.aget_expiry_date(),
         )
 
-From the async implementation, a synchronous variant has been generated. It maintains comments and layout, but rewrites ``await`` expressions to no longer be ``await``. It is able to do this for Django-related code by relying on the following norm in Django code.
+From the async implementation, a synchronous variant has been generated. It maintains comments and layout, but rewrites ``await`` expressions to no longer be ``await``. It is able to do this for Django-related code by relying on the naming conventions for sync and async variants of Django APIs.
 
-    Asynchronous methods have names starting with ``a``. Their synchronous variant is found by removing the ``a``.
-    Asynchronous private methods have names starting with ``_a``. Their synchronous variant is found by replacing ``_a`` with ``_``.
+The synchronous variant has also been annotated with ``@from_codegen``. This decorator serves both as documentation and a way for ``django-unasyncify`` to be able to run idempotently.
 
-The synchronous variant has also been annotated with ``@from_codegen``. This decorator serves both as documentation and a way for ``django-async`` to be able to run idempotently.
+The rough naming convention for a Django API is that the asynchronous variant for a synchronous API is gotten by adding an ``a`` to the name. ``get`` becomes ``aget``, ``save`` becomes ``asave``, etc.
+
+.. note::
+
+   - Asynchronous methods have names starting with ``a``.
+   - Their synchronous variant is found by removing the ``a``.
+   - Asynchronous private methods have names starting with ``_a``.
+   - Their synchronous variant is found by replacing ``_a`` with ``_``.
+
 
 
 .. toctree::

@@ -12,19 +12,21 @@ Getting Started
      # (relative to pyproject.toml's location)
      paths_to_visit = [
         "src/some/code/folder/",
-        "src/some/specificic/file.py",
+        "src/some/specific/file.py",
      ]
 
-     # path to a python file that django-unasyncify will create
-     # that holds decorators used for codegen
-     codegen_decorators_path = "src/pkg/_codegen.py"
+     # path to a python file that django-unasyncify
+     # will manage with unasync helpers
+     unasync_helpers_path = "src/pkg/_codegen.py"
      # The import path for the decorator
-     codegen_import_path = "pkg._codegen"
+     unasync_helpers_import_path = "pkg._codegen"
 
 3. Decorate a method that you want to generate a synchronous variant of. Make sure to follow the Django naming convention of starting your async method with an ``a``!::
 
-     # notice the path here, the same as the codegen_import_path setting
-     # (this file will be created once you run django-unasync at least once)
+
+     # (django-unasyncify will create this pkg
+     #  on first run, from the unasync_helpers_path
+     #  settings)
      from pkg._codegen import generate_unasynced
 
      ...
@@ -34,7 +36,9 @@ Getting Started
 
         @generate_unasynced
         async def aexists(self, session_key):
-            return await self.model.objects.filter(session_key=session_key).aexists()
+            return await self.model.objects.filter(
+              session_key=session_key
+            ).aexists()
 
 4. Once you have labelled your code, you can run ``djang-unasyncify`` at the root of the project (in the same working directory as your ``pyproject.toml``)::
 
@@ -50,8 +54,12 @@ Getting Started
 
         @from_codegen
         def exists(self, session_key):
-            return self.models.objects.filter(session_key=session_key).exists()
+            return self.models.objects.filter(
+              session_key=session_key
+            ).exists()
 
         @generate_unasynced
         async def aexists(self, session_key):
-            return await self.models.objects.filter(session_key=session-key).aexists()
+            return await self.models.objects.filter(
+              session_key=session-key
+            ).aexists()
