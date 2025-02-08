@@ -1,0 +1,26 @@
+# ruff: noqa
+
+
+from unasync_utils import IS_ASYNC, from_codegen, generate_unasynced
+
+@from_codegen
+def get_thing(qs):
+    return qs.get()
+
+@generate_unasynced
+async def aget_thing(qs):
+    return await qs.aget()
+
+
+@from_codegen
+def do_thing():
+    return 2
+
+
+
+@generate_unasynced
+async def ado_thing():
+    if IS_ASYNC:
+        return 1
+    else:
+        return 2
