@@ -1,7 +1,9 @@
+.. _usage-tips:
+
 Usage Tips
 ==========
 
-Here's an unordered set of tips you can use when working on this.
+Here's an unordered set of tips on how to use ``django-unasyncify`` safely.
 
 
 .. _naming-scheme:
@@ -27,6 +29,7 @@ When function names are being unsyncified, three patterns being looked for are, 
 - the name starts with ``a`` (so the sync method should just remove that ``a``)
 
 
+.. _is-async-usage:
 Conditionally Include Code With ``IS_ASYNC``
 --------------------------------------------
 

@@ -1,3 +1,5 @@
+.. _transformation-rules:
+
 Transformation Rules
 ====================
 
@@ -32,33 +34,9 @@ A method with the ``@generate_unasynced`` decorator on it will do the following:
 UnasyncifyMethod
 ----------------
 
-````UnasyncifyMethod`` transforms async code into synchronous code.
+``UnasyncifyMethod`` transforms async code into synchronous code.
 
-Here is a sampling of transformations, described as intuitively as possible.
-
-- When `await expr` is seen, we increase the await depth by 1 before visiting ``expr``, then decrease it by one. When the await depth is bigger than 0 we say we're in an await context.
-
-
-
-- When a function call is seen, we do the following (after having visited the inner components):
-
-  - Check if we're in an await context. If not, do not transform the function call (the inner components, like arguments, have already been visited and transformed).
-
-  - If the function being called is a name (for example `aget()`), then:
-
-    - find the "unasynced function name" for the name
-      (for example ``aget -> get``).
-    - Replace the name being called with this unasynced function name.
-
-  - If the function being called is an attribute access (for example ``self.ado_thing``), then:
-    - find the "unasynced function name" for the attribute access (for example ``ado_thing -> do_thing``)
-    - Replace the attribute name in the call (``self.ado_thing() -> self.do_thing()``)
-
-- When an if statement is seen:
-  - if the `if` condition is exactly the name ``IS_ASYNC``: remove the condition entirely.
-
-
-Here is a list of transformation examples that capture what this does. For exact details, looking at ``UnasyncifyMethod`` might be quicker.
+Here is a list of transformation examples that capture what this does. For exact details, looking at the code for ``UnasyncifyMethod`` is recommended.
 
 Async ``with`` statements are transformed::
 

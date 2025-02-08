@@ -45,7 +45,7 @@ Getting Started
 
      django-unasyncify
 
-If you're running it outside of the project root, you can run it by pointing directly to the project directory (where you have your ``pyproject.toml``)::
+   If you're running it outside of the project root, you can run it by pointing directly to the project directory (where you have your ``pyproject.toml``)::
 
      django-unasyncify --project /path/to/project
 
@@ -67,3 +67,5 @@ If you're running it outside of the project root, you can run it by pointing dir
             return await self.models.objects.filter(
               session_key=session-key
             ).aexists()
+
+6. Read up on :ref:`usage-tips` to have a better understanding of how to use ``django-unasyncify``.
