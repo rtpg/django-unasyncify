@@ -3,7 +3,11 @@ Transformation Rules
 
 The main transformation ``django-unasyncify`` applies is via a ``libCST`` Codemod, that traverses the Python code (much like an AST).
 
-This tries to document the transformations that occur.
+This tries to document the transformations that occur. Generally speaking ``django-unasyncify`` does the "right" thing when encountering async syntax, but this document might clarify why you're not seeing the transformation you expect.
+
+.. note::
+
+   If you are seeing behavior that you are not expecting and this document does not help, please report the issue. It could be we are simply missing an odd edge case.
 
 @from_codegen
 -------------
@@ -35,11 +39,15 @@ Here is a sampling of transformations, described as intuitively as possible.
 - When `await expr` is seen, we increase the await depth by 1 before visiting ``expr``, then decrease it by one. When the await depth is bigger than 0 we say we're in an await context.
 
 
+
 - When a function call is seen, we do the following (after having visited the inner components):
+
   - Check if we're in an await context. If not, do not transform the function call (the inner components, like arguments, have already been visited and transformed).
 
   - If the function being called is a name (for example `aget()`), then:
-    - find the "unasynced function name" for the name (for example ``aget -> get``).
+
+    - find the "unasynced function name" for the name
+      (for example ``aget -> get``).
     - Replace the name being called with this unasynced function name.
 
   - If the function being called is an attribute access (for example ``self.ado_thing``), then:
@@ -47,7 +55,7 @@ Here is a sampling of transformations, described as intuitively as possible.
     - Replace the attribute name in the call (``self.ado_thing() -> self.do_thing()``)
 
 - When an if statement is seen:
-  - if the `if` condition is exactly the name ``ASYNC_TRUTH_MARKER``: remove the condition entirely.
+  - if the `if` condition is exactly the name ``IS_ASYNC``: remove the condition entirely.
 
 
 Here is a list of transformation examples that capture what this does. For exact details, looking at ``UnasyncifyMethod`` might be quicker.
@@ -80,11 +88,11 @@ Async ``for`` comprehensions are transformed::
 
   expr for elt in container
 
-``If`` statements have tricky handling. If the test condition is exactly ``ASYNC_TRUTH_MARKER``, we try to remove the associated branch (because we are unasyncifying, ``ASYNC_TRUTH_MARKER`` branches should always be ``False``).
+``If`` statements have tricky handling. If the test condition is exactly ``IS_ASYNC``, we try to remove the associated branch (because we are unasyncifying, ``IS_ASYNC`` branches should always be ``False``).
 
 Thus::
 
-  if ASYNC_TRUTH_MARKER:
+  if IS_ASYNC:
     body1
   else:
     body2
@@ -94,7 +102,7 @@ Thus::
 
 But also::
 
-  if ASYNC_TRUTH_MARKER:
+  if IS_ASYNC:
     body1
   elif other_condition:
     body2
@@ -109,7 +117,12 @@ But also::
 
 
 
-To understand function calls, first we need to cover await depth.
+.. _handling-function-calls:
+
+Handling Function Calls
+^^^^^^^^^^^^^^^^^^^^^^^
+
+To understand how function calls are handled, first we need to cover await depth.
 
 We track how many "``await``'s deeps" we are while traversing the Python code::
 
@@ -202,7 +215,7 @@ Attribute accesses alone don't get rewritten, which might pose a problem if you 
 
 In the above example, it might be that you want ``self.connection.get()`` in your sync variant. In this situation the following can give you that result::
 
-  connection = self.aconnection if ASYNC_TRUTH_MARKER else self.connection
+  connection = self.aconnection if IS_ASYNC else self.connection
 
   result = await connection.aget()
 
@@ -213,9 +226,9 @@ In the above example, it might be that you want ``self.connection.get()`` in you
 
 Bit of an awkward reality but how things are working.
 
-Finally, instances of ``ASYNC_TRUTH_MARKER`` as names get replaced with ``False``. ``ASYNC_TRUTH_MARKER`` itself has a value of ``True`` so it lets you do something like the following::
+Finally, instances of ``IS_ASYNC`` as names get replaced with ``False``. ``IS_ASYNC`` itself has a value of ``True`` so it lets you do something like the following::
 
-  log.info("Doing thing, async=%s", ASYNC_TRUTH_MARKER)
+  log.info("Doing thing, async=%s", IS_ASYNC)
 
   # Becomes
 

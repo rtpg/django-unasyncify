@@ -4,6 +4,8 @@ Usage Tips
 Here's an unordered set of tips you can use when working on this.
 
 
+.. _naming-scheme:
+
 Use the async/sync variant naming scheme
 ----------------------------------------
 

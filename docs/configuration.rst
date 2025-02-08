@@ -64,7 +64,7 @@ For these cases you can use ``identifier_renames`` to definie a key/value mappin
         async_obj   = "sync_obj"
     }
 
-This renaming mapping will kick in during codegen for functions makred with ``@generate_unasynced``.
+This renaming mapping will kick in during codegen for functions marked with ``@generate_unasynced``.
 
 It will replace usages of the identifer in attribute accesses. This is very helpful when dealing with attributes on ``self`` for an object that might manage both sync and async variations::
 
@@ -76,4 +76,6 @@ It will replace usages of the identifer in attribute accesses. This is very help
   return self.connection.properties
 
 
-This renaming is different from the method renaming that happens in
+This renaming is meant for attribute accesses. Async method call renaming happens automatically based on the norm of "removing the ``a``", and you mostly shouldn't need this.
+
+See :ref:`naming-scheme` and :ref:`handling-function-calls` for details on how method renaming happens.

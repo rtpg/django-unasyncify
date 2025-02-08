@@ -8,9 +8,18 @@ django-unasyncify documentation
 
 ``django-unasyncify`` is a project to help maintain sync and async implementations of APIs, focused on code relying on Django's asynchronous API design.
 
+It uses code generation to create separate sets of functions, that have no runtime dependencies on ``django-unasyncify`` nor do they rely on any wrappers to manage functionality, meaning there are no runtime costs to using this tool.
+
+.. note::
+
+   This project is still exploring the design space for this problem. If you encounter any difficulties using this tool, please reach out and share feedback! The hope is that this tool should work well out of the box for projects needing to manage interactions with Django's async API layer.
+
 It does this by relying on `libCST <https://libcst.readthedocs.io/en/latest/index.html>`_'s code modification tooling.
 
-The main utiliy of ``django-unasyncify`` is to generate a synchronous variant of a method based on an asynchronous implementation.
+What It Does
+------------
+
+``django-unasyncify`` generates a synchronous variant of a method based on an asynchronous implementation.
 
 For example, consider the following snippet::
 
@@ -27,6 +36,8 @@ For example, consider the following snippet::
             session_data=self.encode(data),
             expire_date=await self.aget_expiry_date(),
         )
+
+The above method is annotated with ``@generate_unasynced``, indicating we want a synchronous variant for this method.
 
 After running ``django-unasyncify``, the file containing this method is modified to become the following::
 
