@@ -9,6 +9,14 @@ class Config:
     project_base: Path = Path(".")
     paths_to_visit: list[str] = field(default_factory=lambda: [])
     attribute_renames: dict[str, str] = field(default_factory=lambda: {})
+    # XXX maybe rename this one
+    codegen_import_path: str = "MISSING_IMPORT_PATH"
+    codegen_generators_path: str = "MISSING"
+
+    def __post_init__(self):
+        # this IS_ASYNC rename is present even when we explicitly don't include
+        # it. I have not come up with a good situation to not do this.
+        self.attribute_renames.setdefault("IS_ASYNC", "False")
 
 
 def load_config(project_path: str):
