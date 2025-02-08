@@ -31,5 +31,26 @@ class TestFoo(CodemodTest):
 
         self.assertCodemod(before, after)
 
-    # def test_something(self):
-    #     assert 1 == 2
+    def test_unasynced_generation_no_parens(self):
+        before = """
+        @generate_unasynced
+        async def aoperation(self):
+          # a comment to be preserved
+          await self.afoo()
+        """
+
+        after = """
+        from django.utils.codegen import from_codegen
+
+        @from_codegen
+        def operation(self):
+          # a comment to be preserved
+          self.foo()
+
+        @generate_unasynced
+        async def aoperation(self):
+          # a comment to be preserved
+          await self.afoo()
+        """
+
+        self.assertCodemod(before, after)

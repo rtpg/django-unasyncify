@@ -155,6 +155,8 @@ class UnasyncifyMethodCommand(VisitorBasedCodemodCommand):
                 return True
         return False
 
+    unasynced_name = m.Name(value="generate_unasynced")
+    generate_unasynced_pattern = unasynced_name | m.Call(func=unasynced_name)
     generate_unasync_pattern = m.Call(
         func=m.Name(value="generate_unasynced"),
     )
@@ -172,27 +174,33 @@ class UnasyncifyMethodCommand(VisitorBasedCodemodCommand):
         # we only consider the top decorator, and will copy everything else
         if node.decorators:
             decorator = node.decorators[0]
-            if isinstance(decorator.decorator, cst.Name):
+            if m.matches(decorator.decorator, self.generate_unasynced_pattern):
+                # raw call @generate_unasynced
+                if isinstance(decorator.decorator, Name):
+                    unasync = True
+                    async_unsafe = False
+                else:
+                    # Safety: m.matches call above
+                    call: cst.Call = cast(cst.Call, decorator.decorator)
+                    unasync = True
+                    args = call.args
+                    if len(args) == 0:
+                        async_unsafe = False
+                    elif len(args) == 1:
+                        # assert that it's async_unsafe, our only supported
+                        # keyword for now
+                        assert m.matches(
+                            args[0], self.generated_keyword_pattern
+                        ), f"We only support async_unsafe=True as a keyword argument, got {args}"
+                        async_unsafe = True
+                    else:
+                        raise ValueError(
+                            "generate_unasynced only supports 0 or 1 arguments"
+                        )
+            elif isinstance(decorator.decorator, cst.Name):
                 if decorator.decorator.value == "from_codegen":
                     from_codegen = True
-            elif m.matches(decorator.decorator, self.generate_unasync_pattern):
-                # Safety: m.matches call above
-                call: cst.Call = cast(cst.Call, decorator.decorator)
-                unasync = True
-                args = call.args
-                if len(args) == 0:
-                    async_unsafe = False
-                elif len(args) == 1:
-                    # assert that it's async_unsafe, our only supported
-                    # keyword for now
-                    assert m.matches(
-                        args[0], self.generated_keyword_pattern
-                    ), f"We only support async_unsafe=True as a keyword argument, got {args}"
-                    async_unsafe = True
-                else:
-                    raise ValueError(
-                        "generate_unasynced only supports 0 or 1 arguments"
-                    )
+
         return DecoratorInfo(from_codegen, unasync, async_unsafe)
 
     def decorator_names(self, node: FunctionDef) -> list[str]:
