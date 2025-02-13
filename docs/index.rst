@@ -12,7 +12,7 @@ It uses code generation to create separate sets of functions, that have no runti
 
 .. note::
 
-   This project is still exploring the design space for this problem. If you encounter any difficulties using this tool, please reach out and share feedback! The hope is that this tool should work well out of the box for projects needing to manage interactions with Django's async API layer.
+   This project is still exploring the design space for this problem. If you encounter any difficulties using this tool, please `reach out <https://github.com/rtpg/django-unasyncify/issues/new>`_ and share feedback! The hope is that this tool should work well out of the box for projects needing to manage interactions with Django's async API layer.
 
 It does this by relying on `libCST <https://libcst.readthedocs.io/en/latest/index.html>`_'s code modification tooling.
 

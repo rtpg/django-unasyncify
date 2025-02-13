@@ -24,3 +24,10 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 html_theme = "alabaster"
 html_static_path = ["_static"]
+html_theme_options = {
+    "github_user": "rtpg",
+    "github_repo": "django-unasyncify",
+    "github_banner": True,
+    "github_type": "star",
+    "github_count": False,
+}
