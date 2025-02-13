@@ -1,6 +1,6 @@
 [project]
 name = "django-unasyncify"
-version = "0.1.0"
+version = "0.1.1"
 description = "Codegen tooling to maintain synchronous and asynchronous Django APIs"
 readme = "README.rst"
 requires-python = ">=3.12"
