@@ -3,7 +3,7 @@ Getting Started
 
 ``django-unasyncify`` is meant to be run as a command by developers of a codebase using it. It is not meant to be installed as a dependency of the codebase, and should only be installed as a developer dependency.
 
-1. Install ``django-unasyncify`` as a developer dependency
+1. Install ``django-unasyncify`` as a developer dependency (available as ``django-unasyncify`` on `PyPI <https://pypi.org/project/django-unasyncify/>`_)
 
 2. Inside your ``project.toml``, configure ``django-unasyncify``::
 
